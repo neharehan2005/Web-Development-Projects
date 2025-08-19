@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do-List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Borel&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="to-do-list.css">
+</head>
+<body>
+    <div class="header">
+    TO-DO-LIST
+ </div>
+
+ <div class="list">
+     <input type="text" name="to-do-input" id="to-do-list"  placeholder="Enter Things To-Do.">
+     <button class="btn" id="btn" onclick="addTask()">Add new Task</button>
+     <button class="btn" id="clr-btn" onclick="clearTask()">Clear all Tasks</button>
+    </div>
+
+ <ul class="added-things" id="added-things">
+    
+ </ul>
+
+<script>
+    window.onload=function(){
+        let lists=JSON.parse(localStorage.getItem("lists")) || [];
+        lists.forEach(task =>displayList(task)); 
+            
+    
+    };
+
+function addTask(){
+    let input = document.getElementById("to-do-list").value;
+    if(!input){
+        alert("Please enter a task!");
+        return;
+    }
+
+    let lists=JSON.parse(localStorage.getItem("lists")) || [] ; 
+    if(lists.includes(input)){
+        alert("This task already exists!");
+        return;
+    }
+
+    lists.push(input);
+    localStorage.setItem("lists",JSON.stringify(lists));
+     
+    displayList(input);
+   document.getElementById("to-do-list").value="";
+
+
+    
+}
+function displayList(task){
+    let added=document.getElementById("added-things");
+
+    let taskItem = document.createElement("li");
+    taskItem.classList.add('task-item');
+
+    taskItem.innerHTML = `
+     <span>${task}</span>
+    <button class="delete-btn" title="Delete Task">🗑️</button>
+     `;
+    
+   taskItem.addEventListener("click",function(e){
+       if(e.target.classList.contains("delete-btn"))
+       return ;
+    taskItem.classList.toggle("done");
+    });
+    taskItem.querySelector(".delete-btn").addEventListener("click",function(e){
+      e.stopPropagation();
+      taskItem.remove();
+
+      let lists=JSON.parse(localStorage.getItem("lists")) || [];
+      lists=lists.filter( t=> t!==task);
+      localStorage.setItem("lists",JSON.stringify(lists));
+      renumberTasks();
+    });
+    added.appendChild(taskItem);
+     renumberTasks();
+}
+function renumberTasks(){
+    const allItems=document.querySelectorAll("#added-things li span");
+    allItems.forEach((span,index) => {
+        let taskText=span.textContent.replace(/^\d+\.\s*/, "");
+        span.textContent=`${index+1}.${taskText}`;
+    });
+}
+function clearTask(){
+    localStorage.removeItem("lists");
+    document.getElementById("added-things").innerHTML="";
+}
+</script>
+
+</body>
+</html>
