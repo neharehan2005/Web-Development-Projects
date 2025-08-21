@@ -9,3 +9,4 @@ This project was built to practice core programming concepts and basic project m
 - Display all tasks
 - User-friendly interface
 - Clear all tasks
+- Fully responsive design (works on desktop,and mobile screens)
